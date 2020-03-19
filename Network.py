@@ -1,19 +1,68 @@
 import numpy as np
-from Neuron import Neuron
+import math
+import scipy.special
 
 class Neural_neutwork:
-    def __init__(self):
-        weigth = np.array([0, 1])
-        bias = 0
+    def __init__(self, input_nodes, hidden_nodes, output_nodes, learn_rate):
+        """
+        param: input_nodes : число входных узлов
+        param: hidden_nodes : число скрытых узлов
+        param: output_nodes : число выходных узлов
+        param: learn_rate : скорость обучение
+        param: w_ih : матрица коэф. весов между входным и скрытым узлами
+        param: w_ho : матрица коэф. весов между скрытым и выходным узлами
+        """
+        self.input_nodes = input_nodes
+        self.hidden_nodes = hidden_nodes
+        self.output_nodes = output_nodes
+        self.learn_rate = learn_rate
 
-        self.h1 = Neuron(weigth, bias)
-        self.h2 = Neuron(weigth, bias)
-        self.o1 = Neuron(weigth, bias)
+        self.w_ih = np.random.normal(0.0, pow(self.hidden_nodes, -0.5), (self.hidden_nodes, self.input_nodes))
+        self.w_ho = np.random.normal(0.0, pow(self.output_nodes, -0.5), (self.output_nodes, self.hidden_nodes))
 
-    def feed_Forward(self, x):
-        "Результаты узлов 1 и 2"
-        out_h1 = self.h1.feed_Forward(x)
-        out_h2 = self.h2.feed_Forward(x)
+        self.activate = lambda x: scipy.special.expit(x)
 
-        "Выходы из предыдущих узлов будут входными параметрами для следующего узла"
-        return self.o1.feed_Forward(np.array([out_h1, out_h2]))
+    def train(self, input_list, targets_list):
+        inputs = np.array(input_list, ndmin=2).T
+        targets = np.array(targets_list, ndmin=2).T
+
+        hidden_inputs = np.dot(self.w_ih, inputs)
+        hidden_outputs = self.activate(hidden_inputs)
+
+        final_inputs = np.dot(self.w_ho, hidden_outputs)
+        final_output = self.activate(final_inputs)
+
+        """Вычисление ошибки"""
+        output_errors = targets - final_output
+
+        """
+        ошибки скрытого слоя - это ошибки output_errors,
+        распределенные пропорционально весовым коэффициентам связей
+        и рекомбинированные на скрытых узлах
+        """
+        hidden_errors = np.dot(self.w_ho.T, output_errors)
+
+        """
+        Обновление весов между скрытым и выходным
+        """
+        self.w_ho += self.learn_rate * np.dot((output_errors * final_output * (1.0 - final_output)), np.transpose(hidden_outputs))        
+        
+        """
+        Обновление весов между входным и скрытым
+        """
+        self.w_ih += self.learn_rate * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
+
+    def query(self, input_list):
+        """
+        Метод вычисления результата нейронной сети
+        @param : input_list : список входных значений
+        """
+        inputs = np.array(input_list, ndmin=2).T
+
+        hidden_inputs = np.dot(self.w_ih, inputs)
+        hidden_output = self.activate(hidden_inputs)
+
+        final_input = np.dot(self.w_ho, hidden_output)
+        final_output = self.activate(final_input)
+
+        return final_output

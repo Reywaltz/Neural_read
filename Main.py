@@ -1,14 +1,49 @@
-from Network import Neural_neutwork
-from Neuron import Neuron
 import numpy as np
+from pprint import pprint
+from Network import Neural_neutwork
 
-def MSE(y_true, y_pred):
-    return ((y_true - y_pred) ** 2).mean()
+inp_n = 15
+out_n = 10
+hid_n = 10
+learn_rate = 0.1
 
-x = np.array([2, 3])
+n = Neural_neutwork(inp_n, out_n, hid_n, learn_rate)
 
-y_true = np.array([1, 0, 0, 1])
-y_pred = np.array([0, 0, 0, 0])
-network = Neural_neutwork()
-print(network.feed_Forward(x)) 
-print(MSE(y_true, y_pred))
+with open("numbers.csv", 'r') as f:
+    data = f.readlines()
+
+data = data[1:]
+train_data = data
+
+
+def preparation(str_matrix):
+    f_matrix = []
+
+    targets = []
+
+    for line in str_matrix:
+        target = np.zeros(out_n) + 0.1
+        target[int(line[0])] = 0.99
+        targets.append(target)
+        line = line.split(',')
+        data = (np.asfarray(line[1:]) / 1.0 * 0.99) + 0.1
+        f_matrix.append(data)
+    return f_matrix, targets 
+
+matrix, targets = preparation(train_data)
+ephos = 500
+
+for e in range(ephos):
+    for index, row in enumerate(matrix):
+        n.train(row, targets[index])
+
+for i in range(10):
+    output = n.query(matrix[i])
+    correct_label = np.argmax(targets[i])
+    predict_label = np.argmax(output)
+    print("want - {}, have - {}".format(str(correct_label), str(predict_label)))
+
+
+# pprint(n.w_ih)
+# pprint(n.w_ho)
+# print(np.argmax((n.query([1,1,1,1,0,0,1,1,0,1,0,1,1,1,1]))))
