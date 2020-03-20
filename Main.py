@@ -1,20 +1,31 @@
+import csv
 import numpy as np
 from pprint import pprint
 from Network import Neural_neutwork
 
-inp_n = 15
-out_n = 10
-hid_n = 10
-learn_rate = 0.1
 
+inp_n = 36
+out_n = 26
+hid_n = 26
+learn_rate = 0.1
 n = Neural_neutwork(inp_n, out_n, hid_n, learn_rate)
 
-with open("numbers.csv", 'r') as f:
+with open("letters_test.csv", 'r') as f:
     data = f.readlines()
 
-data = data[1:]
-train_data = data
+letters = data[0].strip()
+train_data = data[1:]
+line = letters.split(',')
 
+dct = {x: x+1 for x in range(len(line))}
+for i in range(len(line)):
+    dct[i] = line[i]
+
+# for line in train_data:
+#     lst = []
+#     some = int(line[1][0])
+#     lst.append(some)
+#     print(lst)
 
 def preparation(str_matrix):
     f_matrix = []
@@ -25,7 +36,7 @@ def preparation(str_matrix):
         target = np.zeros(out_n) + 0.1
         target[int(line[0])] = 0.99
         targets.append(target)
-        line = line.split(',')
+        line = line.strip().split(',')
         data = (np.asfarray(line[1:]) / 1.0 * 0.99) + 0.1
         f_matrix.append(data)
     return f_matrix, targets 
@@ -37,11 +48,11 @@ for e in range(ephos):
     for index, row in enumerate(matrix):
         n.train(row, targets[index])
 
-for i in range(10):
+for i in range(hid_n):
     output = n.query(matrix[i])
     correct_label = np.argmax(targets[i])
     predict_label = np.argmax(output)
-    print("want - {}, have - {}".format(str(correct_label), str(predict_label)))
+    print("Прогноз - {}, Результат - {}".format(str(dct[correct_label]), str(dct[predict_label])))
 
 
 # pprint(n.w_ih)
