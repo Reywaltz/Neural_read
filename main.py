@@ -1,5 +1,4 @@
 import numpy as np
-# from pprint import pprint
 from Network import Neural_neutwork
 
 inp_n = 36
@@ -8,7 +7,7 @@ hid_n = 26
 learn_rate = 0.1
 n = Neural_neutwork(inp_n, out_n, hid_n, learn_rate)
 
-with open("letters_test.csv", 'r') as f:
+with open("letters.csv", 'r') as f:
     data = f.readlines()
 
 letters = data[0].strip()
@@ -47,4 +46,3 @@ for i in range(hid_n):
     print("Прогноз - {}, Результат - {}".format(str(dct[correct_label]),
                                                 str(dct[predict_label])))
 
-print(type(train_data[0]))
