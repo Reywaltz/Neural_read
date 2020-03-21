@@ -1,6 +1,6 @@
 import numpy as np
-import math
 import scipy.special
+
 
 class Neural_neutwork:
     def __init__(self, input_nodes, hidden_nodes, output_nodes, learn_rate):
@@ -17,8 +17,11 @@ class Neural_neutwork:
         self.output_nodes = output_nodes
         self.learn_rate = learn_rate
 
-        self.w_ih = np.random.normal(0.0, pow(self.hidden_nodes, -0.5), (self.hidden_nodes, self.input_nodes))
-        self.w_ho = np.random.normal(0.0, pow(self.output_nodes, -0.5), (self.output_nodes, self.hidden_nodes))
+        self.w_ih = np.random.normal(0.0, pow(self.hidden_nodes, -0.5),
+                                     (self.hidden_nodes, self.input_nodes))
+
+        self.w_ho = np.random.normal(0.0, pow(self.output_nodes, -0.5),
+                                     (self.output_nodes, self.hidden_nodes))
 
         self.activate = lambda x: scipy.special.expit(x)
 
@@ -45,12 +48,16 @@ class Neural_neutwork:
         """
         Обновление весов между скрытым и выходным
         """
-        self.w_ho += self.learn_rate * np.dot((output_errors * final_output * (1.0 - final_output)), np.transpose(hidden_outputs))        
-        
+        self.w_ho += self.learn_rate * np.dot((output_errors * final_output *
+                                               (1.0 - final_output)),
+                                              np.transpose(hidden_outputs))
+
         """
         Обновление весов между входным и скрытым
         """
-        self.w_ih += self.learn_rate * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
+        self.w_ih += self.learn_rate * np.dot((hidden_errors * hidden_outputs *
+                                               (1.0 - hidden_outputs)),
+                                              np.transpose(inputs))
 
     def query(self, input_list):
         """
