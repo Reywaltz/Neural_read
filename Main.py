@@ -1,8 +1,6 @@
-import csv
 import numpy as np
 from pprint import pprint
 from Network import Neural_neutwork
-
 
 inp_n = 36
 out_n = 26
