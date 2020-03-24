@@ -26,12 +26,18 @@ class Neural_neutwork:
         self.activate = lambda x: scipy.special.expit(x)
 
     def train(self, input_list, targets_list):
+        # превращаем входной/целевой вектор в матрицу размерности 2 и транспонируем
         inputs = np.array(input_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
-
+        # создаем скрытый слой путем матричного перемножения весов 
+        # матрицы входного-скрытого слоя на входной вектор
+        # и прогоняем через функцию активации
         hidden_inputs = np.dot(self.w_ih, inputs)
         hidden_outputs = self.activate(hidden_inputs)
 
+        # создаем выходной слой путем матричного перемножения весов
+        # матрицы скрытого-выходного слоя на скрытый слой
+        # и прогоняем через функцию активации
         final_inputs = np.dot(self.w_ho, hidden_outputs)
         final_output = self.activate(final_inputs)
 
